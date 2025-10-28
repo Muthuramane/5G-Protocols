@@ -1,0 +1,91 @@
+IE
+===
+  - Type, 2-bytes
+  - Length, 2-bytes
+  
+PDI IE
+	- Ethernet PDU Session Information
+	- Ethernet Packet Filter
+		- one or more
+NOTE 3: SDF Filter IE(s) in PDI shall not be present if Ethernet Packet Filter IE(s) is present
+		
+Ethernet Packet Filter IE (Grouped IEs)
+	- Ethernet Filter ID
+	- Ethernet Filter Properties
+	- MAC address
+		- maximum upto 16
+	- Ethertype
+	- C-TAG
+	- S-TAG
+	- SDF Filter
+		- one or more
+
+
+
+
+142: Ethernet PDU Session Information
+  - Byte5 flag, BIT1 ETHI (Ethernet Indication), matching all DL traffic
+
+132: Ethernet Packet Filter IE
+    138: Ethernet Filter ID IE
+      - Byte5-8, 4-bytes, value as u32
+    139: Ethernet Filter Properties IE
+      - Byte5, BIT1 BIDE (Bidirectional Ethernet Filter) for the "Ethernet Filter ID IE"
+    133: MAC address IE
+      - Byte5, flags 
+          BIT1, SOUR (Source)
+          BIT2, DEST (Destination)
+          BIT3, USOU (Source)
+          BIT4, UDES (Destination)
+      - Byte6-9, 6-bytes, Source MAC address value, or lower
+      - Byte10-13, 6-bytes, Destination MAC address value or lower
+      - Byte14-17, 6-bytes, Upper Source MAC address value
+      - Byte18-21, 6-bytes, Upper Destination MAC address value
+    136: Ethertype IE
+      - Byte5-6, Ethertype as per IEEE 802.3
+    134: C-TAG IE (Customer VLAN-Tag)
+      - Byte5, flags
+          BIT1, PCP 
+          BIT2, DEI
+          BIT3, VID
+      - Byte6,
+          BIT1-3, PCP value
+          BIT4, DEI flag
+          BIT5-8, VID value, BIT8 as most significant bit of VID
+      - Byte7,
+          VID value, BIT1 as least significant bit of VID
+      Refer: IEEE 802.1Q for PCP, DEI, VID
+    135: S-Tag IE (Service VLAN-Tag)
+      - Byte5, flags
+          BIT1, PCP 
+          BIT2, DEI
+          BIT3, VID
+      - Byte6,
+          BIT1-3, PCP value
+          BIT4, DEI flag
+          BIT5-8, VID value, BIT8 as most significant bit of VID
+      - Byte7,
+          VID value, BIT1 as least significant bit of VID
+    23: SDF Filter IE
+      - Byte5, flags
+          BIT1, FD, Flow Description
+          BIT2, TTC, ToS Traffic Class
+          BIT3, SPI, Security Parameter Index
+          BIT4, FL, Flow Label
+          BIT5, BID, Bidirectional SDF Filter
+      - Byte6, Spare
+      - if BIT1 set,
+        - 2bytes, Length of flow description
+        - n-bytes, flow description
+      - if BIT2 set,
+        - 2bytes, traffic class identifier
+      - if BIT3 set,
+        - 4bytes, IPsec security parameter index
+      - if BIT4 set,
+        - 3bytes, flow label
+      - if BIT5 set,
+        - 4bytes, unique id of SDF filter of a PFCP session
+        
+
+      
+      
