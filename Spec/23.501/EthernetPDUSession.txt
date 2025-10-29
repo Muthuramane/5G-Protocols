@@ -1,0 +1,55 @@
+
+3GPP TS 23.501 version 17.5.0 Release 17 182 ETSI TS 123 501 V17.5.0 (2022-07)
+
+5.8.2.5.3 Support of Ethernet PDU Session type
+
+  UPF
+    > learns the source MAC address(es) connected via N6  (DL traffic)
+    > learns the source MAC address(es) of UE(s) and devices connected behind via N3/N9 (UL traffic)
+    > forwards DL unicast traffic (with a known destination address) on a PDU Session determined based on
+      the source MAC address(es) used by the UE for the UL traffic
+    > forwards UL unicast traffic (with a known destination address) on a port (PDU Session or N6
+      interface) determined based on the source MAC address(es) learned beforehand.
+    @ if the destination MAC address is a broadcast or multicast:
+        > for DL traffic should forward to the associated Network Instance
+        > for UL traffic should forward to the associated Network Instance
+    - unicast traffic of UL & DL, if the destination MAC has not been learnt, the UPF
+      should forward the traffic to every PDU session associated with the same N6 Network Instance. 
+      In any case the traffic is not replicated on the PDU Session or the N6 interface of the incoming
+      traffic.
+      NOTE 1: The UPF can consider a PDU Session or a N6 interface to be active or inactive in order to avoid
+      forwarding loops. User data traffic is not sent on inactive PDU sessions or inactive N6 interface. This
+      release of the specification does not further specify how the UPF determines whether a PDU Session or
+      N6 interface is considered active or inactive.
+      NOTE 2: This release of the specification supports only a single N6 interface in a UPF associated with the N6
+      Network Instance.
+    - if the traffic is received with a VLAN ID, the above criteria apply only towards the N6 interface or PDU session
+      matching the same VLAN ID, unless the UPF is instructed to remove the VLAN ID in the incoming traffic.
+    NOTE 3: This release of the specification supports Independent VLAN Learning (IVL) and does not support
+    Shared VLAN Learning (SVL), as described in IEEE Std 802.1Q [98].
+    - if the destination MAC address of traffic refers to the same N6 interface or PDU session on which the traffic has
+      been received, the frame shall be dropped.
+      
+In order to handle scenarios where a device behind a UE is moved from a source UE to a target UE, a MAC address is
+considered as no longer associated with a UPF interface (source UE's PDU session) when the MAC address has not
+been detected as Source MAC address in UL traffic for a pre-defined period of time or the MAC address has been
+detected under a different interface (target UE's PDU Session or N6).
+    NOTE 4: The UPF/NW-TT may also be provided with static filtering entries as described in clause 5.28.3. How the
+    UPF uses the static filtering entry to achieve forwarding of Ethernet frames to one or more egress ports is
+    up to UPF implementation. The externally observable behaviour of 5GS Bridge needs to comply with
+    IEEE Std 802.1Q [98].
+
+For ARP/IPv6 Neighbour Solicitation traffic, a SMF's request to respond to ARP/IPv6 Neighbour Solicitation based on
+local cache information or to redirect such traffic from the UPF to the SMF overrules the traffic forwarding rules
+described above.
+    NOTE 5: Local policies in UPF associated with the Network Instance can prevent local traffic switching in the UPF
+    between PDU Sessions either for unicast traffic only or for any traffic. In the case where UPF policies
+    prevent local traffic switching for any traffic (thus for broadcast/multicast traffic) some mechanism such
+    as responding to ARP/ND based on local cache information or local multicast group handling is needed to
+    ensure that upper layer protocol can run on the Ethernet PDU sessions.
+The SMF may ask to get notified with the source MAC addresses used by the UE, e.g. if the PCF has subscribed to UE
+MAC address change notifications, as described in TS 23.503 [45].
+In order to request the UPF to act as defined above, the SMF may, for each PDU Session corresponding to a Network
+Instance, set an Ethernet PDU Session Information in a DL PDR that identifies all (DL) Ethernet packets matching the
+PDU session. Alternatively, for unicast traffic the SMF may provide UPF with dedicated forwarding rules related with
+MAC addresses notified by the UPF.
